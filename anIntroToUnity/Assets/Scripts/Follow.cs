@@ -29,6 +29,16 @@ public class Follow : MonoBehaviour
 
         Vector3 cameraTargetPosition = targetPosition + followVector;
 
+        //rotate the camera based on the object's rotation
+        if (Input.GetKey(KeyCode.A))
+        {
+            gameObject.transform.RotateAround(target.transform.position, -Vector3.up, Vector3.Angle(transform.forward, target.transform.forward) * Time.deltaTime);
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            gameObject.transform.RotateAround(target.transform.position, Vector3.up, Vector3.Angle(transform.forward, target.transform.forward) * Time.deltaTime);
+        }
+
         //creates lag for the camera
         transform.position = Vector3.Lerp(transform.position, cameraTargetPosition, cameraFollowSpeed * Time.deltaTime);
     }

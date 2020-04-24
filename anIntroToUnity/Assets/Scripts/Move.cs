@@ -5,14 +5,6 @@ using UnityEngine;
 
 public class Move : MonoBehaviour
 {
-    // The code that is commented out is my code that I was working on. Raymond said that having different variables is not a good idea.
-
-    // The code that isn't commented out is what Raymond would do.
-
-    //public Vector3 speedLeftKey = new Vector3(-0.1f, 0.0f, 0.0f);
-    //public Vector3 speedRightKey = new Vector3(0.1f, 0.0f, 0.0f);
-    //public Vector3 speedUpKey = new Vector3(0.0f, 0.0f, 0.1f);
-    //public Vector3 speedDownKey = new Vector3(0.0f, 0.0f, -0.1f);
 
     public Vector3 speed;
 
@@ -26,21 +18,19 @@ public class Move : MonoBehaviour
     void Update()
     {
         Vector3 currentSpeed = Vector3.zero;
-        if (Input.GetKey(KeyCode.LeftArrow)) {
-            currentSpeed.x = -speed.x;
-            //gameObject.transform.Translate(speedLeftKey); 
+        if (Input.GetKey(KeyCode.A)) {
+            //rotate the object to the left, but for some reason move the object a little
+            gameObject.transform.RotateAround(transform.position, Vector3.up, -speed.x * Time.deltaTime);
         }
-        if (Input.GetKey(KeyCode.RightArrow)) {
-            currentSpeed.x = speed.x;
-            //gameObject.transform.Translate(speedRightKey); 
+        if (Input.GetKey(KeyCode.D)) {
+            //same as the A key
+            gameObject.transform.RotateAround(transform.position, Vector3.up, speed.x * Time.deltaTime);
         }
-        if (Input.GetKey(KeyCode.UpArrow)) {
+        if (Input.GetKey(KeyCode.W)) {
             currentSpeed.z = speed.z;
-            //gameObject.transform.Translate(speedUpKey); 
         }
-        if (Input.GetKey(KeyCode.DownArrow)) {
+        if (Input.GetKey(KeyCode.S)) {
             currentSpeed.z = -speed.z;
-            //gameObject.transform.Translate(speedDownKey);
         }
 
         gameObject.transform.Translate(currentSpeed * Time.deltaTime);
