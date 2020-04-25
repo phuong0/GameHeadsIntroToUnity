@@ -8,38 +8,43 @@ public class Follow : MonoBehaviour
 
     public GameObject target;
     public float followDistance;
+    public Vector3 followOffSet;
     public float cameraFollowSpeed = 0.1f;
+    public float cameraRotationSpeed = 1.0f;
 
     // Start is called before the first frame update
     void Start()
     {
-        Vector3 targetPosition = target.transform.position;
+        transform.position = CalculateCameraTargetPosition();
 
-        Vector3 followVector = transform.forward * -followDistance;
+        transform.rotation = Quaternion.LookRotation(target.transform.forward);
 
-        transform.position = targetPosition + followVector;
     }
 
     // Update is called once per frame
     void Update()
     {
+        Vector3 cameraTargetPosition = CalculateCameraTargetPosition();
+
+        Vector3 targetForward = target.transform.forward;
+
+        //creates lag for the camera
+        transform.position = Vector3.Lerp(transform.position, cameraTargetPosition, cameraFollowSpeed * Time.deltaTime);
+        
+        //Taking the camera direction and slowly rotating towards the capsule forward
+        Vector3 direction = Vector3.RotateTowards(transform.forward, targetForward, cameraRotationSpeed * Time.deltaTime, 0.0f);
+
+        transform.rotation = Quaternion.LookRotation(direction);
+    }
+
+    Vector3 CalculateCameraTargetPosition()
+    {
         Vector3 targetPosition = target.transform.position;
 
         Vector3 followVector = transform.forward * -followDistance;
 
-        Vector3 cameraTargetPosition = targetPosition + followVector;
+        Vector3 cameraTargetPosition = targetPosition + followVector + followOffSet;
 
-        //rotate the camera based on the object's rotation
-        if (Input.GetKey(KeyCode.A))
-        {
-            gameObject.transform.RotateAround(target.transform.position, -Vector3.up, Vector3.Angle(transform.forward, target.transform.forward) * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            gameObject.transform.RotateAround(target.transform.position, Vector3.up, Vector3.Angle(transform.forward, target.transform.forward) * Time.deltaTime);
-        }
-
-        //creates lag for the camera
-        transform.position = Vector3.Lerp(transform.position, cameraTargetPosition, cameraFollowSpeed * Time.deltaTime);
+        return cameraTargetPosition;
     }
 }
