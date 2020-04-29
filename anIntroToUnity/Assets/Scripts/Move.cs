@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security;
 using UnityEditor.Timeline;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Move : MonoBehaviour
 {
@@ -15,11 +16,13 @@ public class Move : MonoBehaviour
 
     private bool isJumping = false;
     private Rigidbody rb;
+    private CapsuleCollider pCol;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        pCol = GetComponent<CapsuleCollider>();
     }
 
     // Update is called once per frame
@@ -53,14 +56,30 @@ public class Move : MonoBehaviour
 
         gameObject.transform.Rotate(Vector3.up, currentTurnAmount * Time.deltaTime);
         rb.AddForce(transform.forward * currentSpeed * Time.deltaTime, ForceMode.Impulse);
+        rb.angularVelocity = Vector3.zero;
+
+        isGrounded();
 
         if (Input.GetKeyUp(KeyCode.Space) && !isJumping)
         {
-            isJumping = true;
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
-        //need to add code for when capsule hits the ground, change isJumping to false
 
-        rb.angularVelocity = Vector3.zero;
+        //checks for collisions on the ground
+        bool isGrounded() {
+            RaycastHit hit;
+            float castDistance = 1.1f;
+            bool boxHit = Physics.SphereCast(pCol.bounds.center, pCol.radius, Vector3.down, out hit, castDistance);
+            if (!boxHit)
+            {
+                isJumping = true;
+            } 
+            else
+            {
+                isJumping = false;
+            }
+            return boxHit;
+        }
+
     }
 }
