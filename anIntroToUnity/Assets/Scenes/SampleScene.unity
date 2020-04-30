@@ -1772,8 +1772,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: {x: 15, y: 0, z: 8}
   turnSpeed: 90
-  jumpForce: 5
-  pCap: {fileID: 1465954696}
+  jumpForce: 7
 --- !u!1 &1536480367
 GameObject:
   m_ObjectHideFlags: 0

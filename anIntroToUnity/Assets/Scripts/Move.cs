@@ -58,28 +58,22 @@ public class Move : MonoBehaviour
         rb.AddForce(transform.forward * currentSpeed * Time.deltaTime, ForceMode.Impulse);
         rb.angularVelocity = Vector3.zero;
 
-        isGrounded();
-
-        if (Input.GetKeyUp(KeyCode.Space) && !isJumping)
+        if (Input.GetKeyUp(KeyCode.Space) && isGrounded())
         {
+            isJumping = true;
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        } else
+        {
+            isJumping = false;
         }
-
-        //checks for collisions on the ground
-        bool isGrounded() {
-            RaycastHit hit;
-            float castDistance = 1.1f;
-            bool boxHit = Physics.SphereCast(pCol.bounds.center, pCol.radius, Vector3.down, out hit, castDistance);
-            if (!boxHit)
-            {
-                isJumping = true;
-            } 
-            else
-            {
-                isJumping = false;
-            }
-            return boxHit;
-        }
-
+    }
+    
+    //checks for collisions on the ground
+    bool isGrounded()
+    {
+        RaycastHit hit;
+        float castDistance = 1.1f;
+        bool boxHit = Physics.SphereCast(pCol.bounds.center, pCol.radius, Vector3.down, out hit, castDistance);
+        return boxHit;
     }
 }
