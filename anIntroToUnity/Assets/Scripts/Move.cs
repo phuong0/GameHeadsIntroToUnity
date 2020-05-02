@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 
 public class Move : MonoBehaviour
 {
+    public GameObject bullet;
+    public Transform bulletSpawnPoint;
 
     public Vector3 speed;
 
@@ -14,9 +16,11 @@ public class Move : MonoBehaviour
     public float turnSpeed;
     public float jumpForce = 5.0f;
 
-    private bool isJumping = false;
     private Rigidbody rb;
     private CapsuleCollider pCol;
+    private float castDistance;
+    private float currentSpeed = 0.0f;
+    private int jumpCount = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -28,12 +32,7 @@ public class Move : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-    }
-
-    private void FixedUpdate()
-    {
-        float currentSpeed = 0.0f;
+        currentSpeed = 0.0f;
         float currentTurnAmount = 0.0f;
 
         if (Input.GetKey(KeyCode.A))
@@ -54,25 +53,42 @@ public class Move : MonoBehaviour
             currentSpeed = -speed.x;
         }
 
-        gameObject.transform.Rotate(Vector3.up, currentTurnAmount * Time.deltaTime);
-        rb.AddForce(transform.forward * currentSpeed * Time.deltaTime, ForceMode.Impulse);
-        rb.angularVelocity = Vector3.zero;
-
-        if (Input.GetKeyUp(KeyCode.Space) && isGrounded())
+        if (Input.GetKey(KeyCode.F))
         {
-            isJumping = true;
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        } else
-        {
-            isJumping = false;
+            GameObject newBullet = GameObject.Instantiate(bullet, bulletSpawnPoint.position, new Quaternion());
+            Rigidbody bulletBody = newBullet.GetComponent<Rigidbody>();
+            //direction * amount of force
+            bulletBody.AddForce(transform.forward * 30, ForceMode.Impulse);
         }
+
+        gameObject.transform.Rotate(Vector3.up, currentTurnAmount * Time.deltaTime);
+    }
+
+    private void FixedUpdate()
+    {
+        rb.AddForce(transform.forward * currentSpeed * Time.deltaTime, ForceMode.Impulse);
+
+        bool isGrounded = IsGrounded();
+
+        if (isGrounded)
+        {
+            jumpCount = 0;
+        }
+
+        if (Input.GetKeyUp(KeyCode.Space) && (isGrounded || jumpCount < 2))
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            jumpCount++;
+        }
+
+        rb.angularVelocity = Vector3.zero;
     }
     
     //checks for collisions on the ground
-    bool isGrounded()
+    bool IsGrounded()
     {
         RaycastHit hit;
-        float castDistance = 1.1f;
+        castDistance = pCol.bounds.extents.y + 0.1f;
         bool boxHit = Physics.SphereCast(pCol.bounds.center, pCol.radius, Vector3.down, out hit, castDistance);
         return boxHit;
     }
