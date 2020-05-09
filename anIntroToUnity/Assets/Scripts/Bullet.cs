@@ -24,7 +24,7 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    //destory when collide with anything but play and added 0.1f of delay
+    //destory when collide with anything but player and added 0.1f of delay
     private void OnCollisionEnter(Collision collision)
     {
         if (!collision.gameObject.CompareTag("CapsulePlayer"))
