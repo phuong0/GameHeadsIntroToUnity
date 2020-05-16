@@ -1,20 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SocialPlatforms.GameCenter;
 
 public class SpriteMover : MonoBehaviour
 {
 
     public float speed = 5;
+    public float jumpForce = 2.0f;
+    public Slider healthbar;
+
     private Rigidbody2D rb;
     private BoxCollider2D pCollider;
     private float currentSpeed;
-    public float jumpForce = 2.0f;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        healthbar.value = 1.0f;
         rb = GetComponent<Rigidbody2D>();
         pCollider = GetComponent<BoxCollider2D>();
     }
@@ -31,8 +36,13 @@ public class SpriteMover : MonoBehaviour
         {
             currentSpeed += speed;
         }
+
+        if (Input.GetKeyUp(KeyCode.F))
+        {
+            healthbar.value -= 0.1f;
+        }
         
-        if (Input.GetKeyDown(KeyCode.UpArrow) && IsGrounded())
+        if (Input.GetKeyUp(KeyCode.Space) && IsGrounded())
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
@@ -42,7 +52,7 @@ public class SpriteMover : MonoBehaviour
 
     bool IsGrounded()
     {
-        RaycastHit2D raycastHit = Physics2D.BoxCast(pCollider.bounds.center, pCollider.bounds.size, 0f, Vector2.down, 1f);
-        return raycastHit;
+        return Physics2D.BoxCast(pCollider.bounds.center, pCollider.bounds.size, 0f, Vector2.down, 1f);
     }
+
 }
