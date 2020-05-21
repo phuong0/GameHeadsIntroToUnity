@@ -4,17 +4,29 @@ using UnityEngine;
 
 public class PickUp : MonoBehaviour
 {
-    //When player colider with this object, destory object and adds one to the score
+    private GameObject g;
+    private ChangeScore refScript;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        g = GameObject.Find("Player");
+        refScript = g.GetComponent<ChangeScore>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            Destroy(gameObject);
+            refScript.changingScore();
+        }
         
     }
 }

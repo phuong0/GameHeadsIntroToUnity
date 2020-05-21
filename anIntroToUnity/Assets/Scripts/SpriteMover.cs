@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using UnityEngine.SocialPlatforms.GameCenter;
 
 public class SpriteMover : MonoBehaviour
@@ -9,25 +10,37 @@ public class SpriteMover : MonoBehaviour
 
     public float speed = 5;
     public float jumpForce = 2.0f;
-    public Slider healthbar;
 
     private Rigidbody2D rb;
-    private BoxCollider2D pCollider;
-    private float currentSpeed;
+    private float distanceToGround = 0.0f;
+    private bool isJumping = false;
+    private LayerMask mask;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        healthbar.value = 1.0f;
+        int maskValue = LayerMask.GetMask("Player");
+        mask = ~maskValue;
+
+        isJumping = false;
         rb = GetComponent<Rigidbody2D>();
-        pCollider = GetComponent<BoxCollider2D>();
+        distanceToGround = GetComponent<CircleCollider2D>().radius + Mathf.Epsilon;
     }
 
     // Update is called once per frame
     void Update()
     {
-        currentSpeed = 0.0f;
+        if (Input.GetKeyUp(KeyCode.Space) && IsGrounded())
+        {
+            isJumping = true;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        float currentSpeed = 0.0f;
+
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             currentSpeed -= speed;
@@ -37,22 +50,19 @@ public class SpriteMover : MonoBehaviour
             currentSpeed += speed;
         }
 
-        if (Input.GetKeyUp(KeyCode.F))
-        {
-            healthbar.value -= 0.1f;
-        }
-        
-        if (Input.GetKeyUp(KeyCode.Space) && IsGrounded())
+        rb.AddForce(new Vector2(currentSpeed * Time.deltaTime, 0.0f), ForceMode2D.Impulse); 
+
+        if(isJumping)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            isJumping = false;
         }
-
-        rb.AddForce(new Vector2(currentSpeed * Time.deltaTime, 0.0f), ForceMode2D.Impulse);
     }
 
     bool IsGrounded()
     {
-        return Physics2D.BoxCast(pCollider.bounds.center, pCollider.bounds.size, 0f, Vector2.down, 1f);
+        RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - distanceToGround), Vector2.down, 0.1f, mask);
+        return (hit.collider != null);
     }
 
 }
